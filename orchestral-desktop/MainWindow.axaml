@@ -1,0 +1,1158 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Orchestral.Desktop"
+        mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="840"
+        x:Class="Orchestral.Desktop.MainWindow"
+        Title="Orchestral - Autonomous Security Intelligence Platform"
+        Width="1280" Height="840" MinWidth="1100" MinHeight="740"
+        Background="{StaticResource AntigravityCanvasGradient}">
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- TOP APP BAR -->
+        <Border Grid.Row="0" Background="{StaticResource AntigravityHeaderGradient}" 
+                BorderBrush="{StaticResource GoogleBorderSubtleBrush}" BorderThickness="0,0,0,1" 
+                Padding="20,12">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <!-- Google Antigravity Brand Emblem & Title -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+                    <Canvas Width="34" Height="34">
+                        <Polygon Points="17,2 2,17 17,17" Fill="{StaticResource GoogleBlueBrush}" Opacity="0.9" />
+                        <Polygon Points="17,2 32,17 17,17" Fill="{StaticResource GooglePurpleBrush}" Opacity="0.9" />
+                        <Polygon Points="2,17 17,32 17,17" Fill="{StaticResource GoogleCyanBrush}" Opacity="0.8" />
+                        <Polygon Points="32,17 17,32 17,17" Fill="{StaticResource GoogleGreenBrush}" Opacity="0.8" />
+                        <Path Canvas.Left="12" Canvas.Top="12" Width="10" Height="10" 
+                              Data="{StaticResource IconSparkle}" Fill="White" Stretch="Uniform" />
+                    </Canvas>
+                    <StackPanel VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <TextBlock Text="Orchestral" FontSize="16" FontWeight="SemiBold" 
+                                       Foreground="{StaticResource GoogleTextPrimaryBrush}" LetterSpacing="0.4" />
+                            <Border Background="#1C2738" CornerRadius="4" Padding="6,2" BorderBrush="#263A54" BorderThickness="1">
+                                <TextBlock Text="CITADEL" FontSize="10" FontWeight="Medium" 
+                                           Foreground="{StaticResource GoogleBlueBrush}" FontFamily="Monospace" />
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Text="Autonomous Security Swarm Intelligence" 
+                                   FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" Margin="0,1,0,0" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Live Subsystem Telemetry Badges -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <!-- Citadel Daemon Badge -->
+                    <Border Background="{StaticResource CitadelBadgeGradient}" CornerRadius="14" Padding="10,5" 
+                            BorderBrush="#1D4C33" BorderThickness="1">
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <Ellipse Width="6" Height="6" Fill="{StaticResource GoogleGreenBrush}" />
+                            <TextBlock x:Name="CitadelStatusText" Text="Citadel :8088 Connected" 
+                                       FontSize="11" FontWeight="Medium" 
+                                       Foreground="{StaticResource GoogleGreenBrush}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Active Model Header Badge -->
+                    <Border Background="{StaticResource TartarusBadgeGradient}" CornerRadius="14" Padding="10,5" 
+                            BorderBrush="#2A334F" BorderThickness="1">
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <Path Data="{StaticResource IconSparkle}" Fill="{StaticResource GoogleBlueBrush}" Width="12" Height="12" Stretch="Uniform" />
+                            <TextBlock x:Name="ActiveModelHeaderBadge" Text="Model: Gemini 2.5 Flash" FontSize="11" FontWeight="Medium" 
+                                       Foreground="{StaticResource GoogleBlueBrush}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Connected MCP Count Badge -->
+                    <Border Background="{StaticResource MetricCardCyanGradient}" CornerRadius="14" Padding="10,5" 
+                            BorderBrush="#1D3842" BorderThickness="1">
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <Path Data="{StaticResource IconTool}" Fill="{StaticResource GoogleCyanBrush}" Width="12" Height="12" Stretch="Uniform" />
+                            <TextBlock x:Name="McpCountHeaderBadge" Text="MCP: 4 Connected" FontSize="11" FontWeight="Medium" 
+                                       Foreground="{StaticResource GoogleCyanBrush}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Button x:Name="RefreshButton" Click="OnRefreshClicked"
+                            Background="{StaticResource GoogleSurfaceBrush}" BorderBrush="{StaticResource GoogleBorderBrush}"
+                            BorderThickness="1" CornerRadius="6" Padding="10,6">
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <Path Data="{StaticResource IconRefresh}" Fill="{StaticResource GoogleTextSecondaryBrush}" Width="12" Height="12" Stretch="Uniform" />
+                            <TextBlock Text="Sync" FontSize="11" FontWeight="Medium" Foreground="{StaticResource GoogleTextSecondaryBrush}" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- MAIN WORKSPACE: SIDEBAR + CONTENT VIEW -->
+        <Grid Grid.Row="1" ColumnDefinitions="240, *">
+            <!-- LEFT NAVIGATION RAIL (4 ESSENTIAL TABS ONLY) -->
+            <Border Grid.Column="0" Background="{StaticResource AntigravitySidebarGradient}" 
+                    BorderBrush="{StaticResource GoogleBorderSubtleBrush}" BorderThickness="0,0,1,0" 
+                    Padding="12,16">
+                <Grid RowDefinitions="*, Auto">
+                    <StackPanel Grid.Row="0" Spacing="6">
+                        <TextBlock Text="WORKSPACES &amp; TOOLS" FontSize="10" FontWeight="SemiBold" 
+                                   Foreground="{StaticResource GoogleTextMutedBrush}" Margin="10,0,0,10" LetterSpacing="0.5" />
+
+                        <!-- TAB 1: AGENT CHAT -->
+                        <Button x:Name="NavChat" Click="OnNavClicked" Tag="Chat"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Background="{StaticResource NavButtonActiveGradient}" BorderBrush="{StaticResource GoogleBlueBrush}" BorderThickness="1"
+                                CornerRadius="8" Padding="12,10">
+                            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                <Path Data="{StaticResource IconChat}" Fill="{StaticResource GoogleBlueBrush}" Width="15" Height="15" Stretch="Uniform" />
+                                <TextBlock Text="Agent Chat" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontWeight="Medium" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- TAB 2: AI MODEL PROVIDERS -->
+                        <Button x:Name="NavProviders" Click="OnNavClicked" Tag="Providers"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Background="Transparent" BorderBrush="Transparent" BorderThickness="1"
+                                CornerRadius="8" Padding="12,10">
+                            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                <Path Data="{StaticResource IconSparkle}" Fill="{StaticResource GooglePurpleBrush}" Width="15" Height="15" Stretch="Uniform" />
+                                <TextBlock Text="AI Model Providers" Foreground="{StaticResource GoogleTextSecondaryBrush}" FontWeight="Normal" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- TAB 3: MCPS & INTEGRATIONS -->
+                        <Button x:Name="NavMcp" Click="OnNavClicked" Tag="Mcp"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Background="Transparent" BorderBrush="Transparent" BorderThickness="1"
+                                CornerRadius="8" Padding="12,10">
+                            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                <Path Data="{StaticResource IconTool}" Fill="{StaticResource GoogleCyanBrush}" Width="15" Height="15" Stretch="Uniform" />
+                                <TextBlock Text="MCPs &amp; Integrations" Foreground="{StaticResource GoogleTextSecondaryBrush}" FontWeight="Normal" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- TAB 4: SETTINGS -->
+                        <Button x:Name="NavSettings" Click="OnNavClicked" Tag="Settings"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Background="Transparent" BorderBrush="Transparent" BorderThickness="1"
+                                CornerRadius="8" Padding="12,10">
+                            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                <Path Data="{StaticResource IconSettings}" Fill="{StaticResource GoogleBlueBrush}" Width="15" Height="15" Stretch="Uniform" />
+                                <TextBlock Text="Settings" Foreground="{StaticResource GoogleTextSecondaryBrush}" FontWeight="Normal" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Bottom Workspace Environment Card -->
+                    <Border Grid.Row="1" Background="{StaticResource AntigravityCardGradient}" CornerRadius="8" 
+                            BorderBrush="{StaticResource GoogleBorderSubtleBrush}" BorderThickness="1" Padding="12,10">
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="WORKSPACE CONTEXT" FontSize="10" FontWeight="SemiBold" 
+                                       Foreground="{StaticResource GoogleTextMutedBrush}" LetterSpacing="0.4" />
+                            <TextBlock x:Name="WorkspaceLocationText" Text="Location: /home/admin/Swarm" FontSize="11" FontWeight="Medium" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontFamily="Monospace" TextTrimming="CharacterEllipsis" />
+                            <TextBlock x:Name="MemoryTelemetryText" Text="Runtime Memory: 48 MB" 
+                                       FontSize="11" Foreground="{StaticResource GoogleGreenBrush}" />
+                            <TextBlock Text="Daemon: 127.0.0.1:8088" FontSize="10" Foreground="{StaticResource GoogleTextSecondaryBrush}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- MAIN WORKSPACE VIEWPORT -->
+            <Border Grid.Column="1" Padding="24">
+                <Grid>
+                    <!-- VIEW 1: AGENT CHAT SESSION (3-COLUMN WORKSPACE SESSIONS & ORCHESTRATION) -->
+                    <Grid x:Name="ViewChat" IsVisible="True" ColumnDefinitions="260, 1, *">
+                        <!-- Left Workspace Sessions Rail -->
+                        <Border Grid.Column="0" Background="{StaticResource AntigravitySidebarGradient}" 
+                                BorderBrush="{StaticResource GoogleBorderSubtleBrush}" BorderThickness="0,0,1,0" 
+                                Padding="12,10" Margin="-24,-24,0,-24">
+                            <Grid RowDefinitions="Auto, Auto, *">
+                                <!-- Top Action: New Session -->
+                                <Button Grid.Row="0" x:Name="NewSessionButton" Click="OnNewSessionClicked"
+                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                        Background="{StaticResource GoogleSurfaceHighBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1"
+                                        CornerRadius="8" Padding="12,9" Margin="0,0,0,14">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <Path Data="{StaticResource IconPlus}" Fill="{StaticResource GoogleBlueBrush}" Width="12" Height="12" Stretch="Uniform" />
+                                        <TextBlock Text="New Chat Session" FontWeight="Medium" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" />
+                                    </StackPanel>
+                                </Button>
+
+                                <TextBlock Grid.Row="1" Text="SESSIONS BY WORKSPACE" FontSize="10" FontWeight="SemiBold" 
+                                           Foreground="{StaticResource GoogleTextMutedBrush}" LetterSpacing="0.4" Margin="2,0,0,8" />
+
+                                <!-- Sessions List grouped by folder location -->
+                                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                                    <StackPanel x:Name="SessionGroupsContainer" Spacing="6" />
+                                </ScrollViewer>
+                            </Grid>
+                        </Border>
+
+                        <!-- Center Divider -->
+                        <Border Grid.Column="1" Background="{StaticResource GoogleBorderSubtleBrush}" Margin="0,-24,0,-24" />
+
+                        <!-- Right Main Chat Area -->
+                        <Grid Grid.Column="2" RowDefinitions="Auto, *, Auto" Margin="20,0,0,0">
+                            <!-- Chat Header -->
+                            <Border Grid.Row="0" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,12" Margin="0,0,0,14">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <StackPanel Grid.Column="0" Spacing="4">
+                                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconChat}" Fill="{StaticResource GoogleBlueBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock x:Name="ActiveSessionTitleText" Text="Orchestral Intelligence Swarm" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            <!-- Scope badge -->
+                                            <Border x:Name="ScopeBadgeBorder" Background="#133324" CornerRadius="4" Padding="6,2" BorderBrush="#1D4C33" BorderThickness="1" Margin="6,0,0,0">
+                                                <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                                    <Path Data="{StaticResource IconLock}" Fill="{StaticResource GoogleGreenBrush}" Width="10" Height="10" Stretch="Uniform" />
+                                                    <TextBlock x:Name="ScopeBadgeText" Text="Scope: CWD Only" FontSize="10" FontWeight="Medium" Foreground="{StaticResource GoogleGreenBrush}" />
+                                                </StackPanel>
+                                            </Border>
+                                            <!-- Chrome MCP Badge -->
+                                            <Border x:Name="ChromeMcpBadgeBorder" Background="#12242D" CornerRadius="4" Padding="6,2" BorderBrush="#1C4050" BorderThickness="1" IsVisible="True">
+                                                <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                                    <Path Data="{StaticResource IconChrome}" Fill="{StaticResource GoogleCyanBrush}" Width="10" Height="10" Stretch="Uniform" />
+                                                    <TextBlock Text="Chrome MCP: Active" FontSize="10" FontWeight="Medium" Foreground="{StaticResource GoogleCyanBrush}" />
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock x:Name="ActiveSessionPathText" Text="Workspace: /home/admin/Swarm" FontSize="11" FontFamily="Monospace" Foreground="{StaticResource GoogleTextSecondaryBrush}" />
+                                    </StackPanel>
+
+                                    <!-- Right Action Deck -->
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <!-- Subagent Activity Inspector Button -->
+                                        <Button x:Name="InspectSubagentsButton" Click="OnInspectSubagentsClicked"
+                                                Background="{StaticResource GoogleSurfaceBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="8,5">
+                                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                <Path Data="{StaticResource IconSubagent}" Fill="{StaticResource GooglePurpleBrush}" Width="13" Height="13" Stretch="Uniform" />
+                                                <TextBlock x:Name="SubagentStatusSummaryText" Text="Inspect Subagents" FontSize="11" FontWeight="Medium" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            </StackPanel>
+                                        </Button>
+
+                                        <!-- Background Tasks Pill -->
+                                        <Border x:Name="BgTasksPill" Background="#1C2738" CornerRadius="6" Padding="8,4" BorderBrush="#263A54" BorderThickness="1" IsVisible="False">
+                                            <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                                <Ellipse Width="6" Height="6" Fill="{StaticResource GoogleCyanBrush}" />
+                                                <TextBlock x:Name="BgTasksCountText" Text="0 Background Tasks" FontSize="11" FontFamily="Monospace" Foreground="{StaticResource GoogleCyanBrush}" />
+                                            </StackPanel>
+                                        </Border>
+
+                                        <!-- Model Selector Dropdown -->
+                                        <Border Background="{StaticResource GoogleSurfaceBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="2">
+                                            <ComboBox x:Name="ModelSelector" SelectedIndex="0" SelectionChanged="OnModelSelectionChanged"
+                                                      Background="Transparent" BorderThickness="0" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12">
+                                                <ComboBoxItem Content="Gemini 2.5 Flash (Recommended)" Tag="gemini-2.5-flash" />
+                                                <ComboBoxItem Content="Gemini 2.5 Pro (Deep Analysis)" Tag="gemini-2.5-pro" />
+                                                <ComboBoxItem Content="Claude 3.7 Sonnet (Advanced)" Tag="claude-3.7-sonnet" />
+                                                <ComboBoxItem Content="GPT-4o (Reasoning)" Tag="gpt-4o" />
+                                                <ComboBoxItem Content="DeepSeek-R1 (Open Reasoning)" Tag="deepseek-r1" />
+                                                <ComboBoxItem Content="Ollama Llama 3.3 (Local Air-Gapped)" Tag="ollama-llama" />
+                                                <ComboBoxItem Content="Local Citadel Engine" Tag="citadel-local" />
+                                                <ComboBoxItem Content="+ Configure Providers..." Tag="configure-providers" />
+                                            </ComboBox>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Chat Message Stream -->
+                            <ScrollViewer Grid.Row="1" x:Name="ChatScroller" VerticalScrollBarVisibility="Auto">
+                                <StackPanel x:Name="ChatHistory" MaxWidth="880" HorizontalAlignment="Stretch" Spacing="16" Margin="0,0,0,16" />
+                            </ScrollViewer>
+
+                            <!-- Antigravity Prompt Capsule Input Bar -->
+                            <Border Grid.Row="2" MaxWidth="880" HorizontalAlignment="Stretch" Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="12" Padding="14,10" Margin="0,8,0,0">
+                                <Grid RowDefinitions="Auto, Auto, Auto">
+                                    <!-- Context Attachment Chips Panel -->
+                                    <WrapPanel Grid.Row="0" x:Name="AttachmentChipsPanel" Margin="0,0,0,8" IsVisible="False" />
+
+                                    <!-- Main Input Field -->
+                                    <TextBox x:Name="ChatInput" Grid.Row="1"
+                                             Classes="plain"
+                                             Watermark="Message Orchestral agent or describe an objective..."
+                                             Background="Transparent" BorderThickness="0"
+                                             Foreground="{StaticResource GoogleTextPrimaryBrush}"
+                                             FontSize="13" Padding="0,0,0,8"
+                                             AcceptsReturn="True" MinHeight="38" MaxHeight="120"
+                                             TextWrapping="Wrap" />
+
+                                    <!-- Bottom Action Bar -->
+                                    <Grid Grid.Row="2" ColumnDefinitions="Auto, *, Auto, Auto" Margin="0,4,0,0">
+                                        <!-- Add Context / Attachment Tool Button -->
+                                        <Button Grid.Column="0" x:Name="AttachContextButton"
+                                                Background="{StaticResource GoogleSurfaceHighBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1"
+                                                CornerRadius="6" Padding="10,5">
+                                            <Button.Flyout>
+                                                <MenuFlyout Placement="TopEdgeAlignedLeft">
+                                                    <MenuItem Header="Add Target File..." Click="OnAttachFileClicked">
+                                                        <MenuItem.Icon>
+                                                            <Path Data="{StaticResource IconFile}" Fill="{StaticResource GoogleBlueBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Add Project Folder..." Click="OnAttachFolderClicked">
+                                                        <MenuItem.Icon>
+                                                            <Path Data="{StaticResource IconFolder}" Fill="{StaticResource GoogleYellowBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Add Security Tool">
+                                                        <MenuItem.Icon>
+                                                            <Path Data="{StaticResource IconTool}" Fill="{StaticResource GoogleCyanBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                                        </MenuItem.Icon>
+                                                        <MenuItem Header="Nmap Network Scanner" Click="OnAttachToolItemClicked" Tag="tool:nmap" />
+                                                        <MenuItem Header="Sqlmap Injection Assessor" Click="OnAttachToolItemClicked" Tag="tool:sqlmap" />
+                                                        <MenuItem Header="Nikto Web Scanner" Click="OnAttachToolItemClicked" Tag="tool:nikto" />
+                                                        <MenuItem Header="Semgrep SAST Code Auditor" Click="OnAttachToolItemClicked" Tag="tool:semgrep" />
+                                                        <MenuItem Header="John the Ripper Hash Cracker" Click="OnAttachToolItemClicked" Tag="tool:john" />
+                                                        <MenuItem Header="Tartarus Hardened Container" Click="OnAttachToolItemClicked" Tag="tool:tartarus" />
+                                                    </MenuItem>
+                                                    <MenuItem Header="Chrome MCP Browser">
+                                                        <MenuItem.Icon>
+                                                            <Path Data="{StaticResource IconChrome}" Fill="{StaticResource GoogleCyanBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                                        </MenuItem.Icon>
+                                                        <MenuItem Header="Browse Remote Web Target" Click="OnAttachChromeMcpActionClicked" Tag="chrome:browse" />
+                                                        <MenuItem Header="Inspect Web DOM &amp; Form Fields" Click="OnAttachChromeMcpActionClicked" Tag="chrome:inspect" />
+                                                        <MenuItem Header="Extract Page Content &amp; Headers" Click="OnAttachChromeMcpActionClicked" Tag="chrome:extract" />
+                                                    </MenuItem>
+                                                    <MenuItem Header="Mention Operative">
+                                                        <MenuItem.Icon>
+                                                            <Path Data="{StaticResource IconSwarm}" Fill="{StaticResource GooglePurpleBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                                        </MenuItem.Icon>
+                                                        <MenuItem Header="@archon (Swarm Lead Coordinator)" Click="OnAttachMentionClicked" Tag="@archon" />
+                                                        <MenuItem Header="@sentinel (Reconnaissance Specialist)" Click="OnAttachMentionClicked" Tag="@sentinel" />
+                                                        <MenuItem Header="@cerberus (DAST Vulnerability Assessor)" Click="OnAttachMentionClicked" Tag="@cerberus" />
+                                                        <MenuItem Header="@athena (SAST Code Auditor)" Click="OnAttachMentionClicked" Tag="@athena" />
+                                                        <MenuItem Header="@justiciar (Triage Specialist)" Click="OnAttachMentionClicked" Tag="@justiciar" />
+                                                    </MenuItem>
+                                                    <MenuItem Header="Security Directives">
+                                                        <MenuItem.Icon>
+                                                            <Path Data="{StaticResource IconRadar}" Fill="{StaticResource GoogleGreenBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                                        </MenuItem.Icon>
+                                                        <MenuItem Header="Directive: Run Full Perimeter Recon" Click="OnQuickActionItemClicked" Tag="Perform complete network service and port discovery" />
+                                                        <MenuItem Header="Directive: Web Vulnerability Audit" Click="OnQuickActionItemClicked" Tag="Assess endpoints for OWASP Top 10 vulnerabilities" />
+                                                        <MenuItem Header="Directive: Code Secrets and Taint Scan" Click="OnQuickActionItemClicked" Tag="Scan workspace repositories for hardcoded credentials and taint flows" />
+                                                    </MenuItem>
+                                                </MenuFlyout>
+                                            </Button.Flyout>
+                                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                <Path Data="{StaticResource IconPlus}" Fill="{StaticResource GoogleTextPrimaryBrush}" Width="11" Height="11" Stretch="Uniform" />
+                                                <TextBlock Text="Add Context" FontSize="11" FontWeight="Medium" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            </StackPanel>
+                                        </Button>
+
+                                        <!-- Guide hint -->
+                                        <TextBlock Grid.Column="1" Text="Press Enter to send, Shift+Enter for new line" FontSize="11" Foreground="{StaticResource GoogleTextMutedBrush}" VerticalAlignment="Center" Margin="12,0,0,0" />
+
+                                        <!-- Run in Background Option -->
+                                        <CheckBox Grid.Column="2" x:Name="RunInBackgroundCheck" Content="Run in Background" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,10,0" />
+
+                                        <!-- Send Button -->
+                                        <Button Grid.Column="3" x:Name="SendChatButton" Click="OnSendChatClicked"
+                                                Background="{StaticResource PrimaryActionGradient}" BorderBrush="{StaticResource GoogleBlueBrush}" BorderThickness="1"
+                                                CornerRadius="6" Padding="16,6">
+                                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                <Path Data="{StaticResource IconSend}" Fill="White" Width="12" Height="12" Stretch="Uniform" />
+                                                <TextBlock Text="Send" FontWeight="Medium" Foreground="White" FontSize="12" />
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+
+                    <!-- VIEW 2: AI MODEL PROVIDERS (DEDICATED FULL TAB) -->
+                    <ScrollViewer x:Name="ViewProviders" IsVisible="False">
+                        <StackPanel Spacing="18" MaxWidth="920" HorizontalAlignment="Left">
+                            <!-- Header & Global Actions -->
+                            <Grid ColumnDefinitions="*, Auto">
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <Path Data="{StaticResource IconSparkle}" Fill="{StaticResource GooglePurpleBrush}" Width="18" Height="18" Stretch="Uniform" />
+                                        <TextBlock Text="AI Model Providers &amp; Endpoint Connections" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                    </StackPanel>
+                                    <TextBlock Text="Configure API keys, custom base URLs, and model routing. All API keys are masked by default." FontSize="12" Foreground="{StaticResource GoogleTextSecondaryBrush}" />
+                                </StackPanel>
+                                <Button Grid.Column="1" Click="OnSaveAllProvidersClicked"
+                                        Background="{StaticResource PrimaryActionGradient}" BorderBrush="{StaticResource GoogleBlueBrush}" BorderThickness="1"
+                                        CornerRadius="6" Padding="16,8">
+                                    <TextBlock Text="Save All Provider Credentials" FontWeight="Medium" Foreground="White" FontSize="12" />
+                                </Button>
+                            </Grid>
+
+                            <TextBlock x:Name="ProvidersStatusNotice" Text="" FontSize="11" Foreground="{StaticResource GoogleGreenBrush}" IsVisible="False" />
+
+                            <!-- 1. Google Gemini & Vertex AI -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconSparkle}" Fill="{StaticResource GoogleBlueBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="Google Gemini &amp; Vertex AI" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            <Border Background="#133324" CornerRadius="4" Padding="6,2" BorderBrush="#1D4C33" BorderThickness="1">
+                                                <TextBlock Text="Recommended" FontSize="10" FontWeight="Medium" Foreground="{StaticResource GoogleGreenBrush}" />
+                                            </Border>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                            <Button Click="OnTestProviderConnectionClicked" Tag="gemini"
+                                                    Background="{StaticResource GoogleSurfaceHighBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,4">
+                                                <TextBlock Text="Test Connection" FontSize="11" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            </Button>
+                                            <CheckBox x:Name="GeminiProviderCheck" IsChecked="True" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="160, *" RowDefinitions="Auto, Auto, Auto" Margin="0,4,0,0">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="API Key (Masked)" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*, Auto" Margin="0,0,0,8">
+                                            <TextBox Grid.Column="0" x:Name="SettingsGeminiKeyBox" PasswordChar="*" Watermark="Paste Google Gemini API Key (e.g. AIzaSy...)" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                            <Button Grid.Column="1" Click="OnTogglePasswordVisibilityClicked" Tag="SettingsGeminiKeyBox" Background="Transparent" BorderThickness="0" Padding="6,4">
+                                                <Path Data="{StaticResource IconEye}" Fill="{StaticResource GoogleTextSecondaryBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                            </Button>
+                                        </Grid>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Base URL Override" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="GeminiBaseUrlBox" Text="https://generativelanguage.googleapis.com/v1beta" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Default Model" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="GeminiModelCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" HorizontalAlignment="Stretch">
+                                            <ComboBoxItem Content="gemini-2.5-flash (Fast &amp; Accurate)" />
+                                            <ComboBoxItem Content="gemini-2.5-pro (Deep Multimodal Analysis)" />
+                                            <ComboBoxItem Content="gemini-2.0-flash (High Throughput)" />
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 2. Anthropic Claude -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconChat}" Fill="{StaticResource GooglePurpleBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="Anthropic Claude" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                            <Button Click="OnTestProviderConnectionClicked" Tag="claude"
+                                                    Background="{StaticResource GoogleSurfaceHighBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,4">
+                                                <TextBlock Text="Test Connection" FontSize="11" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            </Button>
+                                            <CheckBox x:Name="ClaudeProviderCheck" IsChecked="True" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="160, *" RowDefinitions="Auto, Auto, Auto" Margin="0,4,0,0">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="API Key (Masked)" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*, Auto" Margin="0,0,0,8">
+                                            <TextBox Grid.Column="0" x:Name="SettingsClaudeKeyBox" PasswordChar="*" Watermark="Paste Anthropic API Key (e.g. sk-ant-...)" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                            <Button Grid.Column="1" Click="OnTogglePasswordVisibilityClicked" Tag="SettingsClaudeKeyBox" Background="Transparent" BorderThickness="0" Padding="6,4">
+                                                <Path Data="{StaticResource IconEye}" Fill="{StaticResource GoogleTextSecondaryBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                            </Button>
+                                        </Grid>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Base URL Override" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="ClaudeBaseUrlBox" Text="https://api.anthropic.com/v1" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Default Model" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="ClaudeModelCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" HorizontalAlignment="Stretch">
+                                            <ComboBoxItem Content="claude-3-7-sonnet-20250219 (State-of-the-art reasoning)" />
+                                            <ComboBoxItem Content="claude-3-5-sonnet-20241022 (Advanced code synthesis)" />
+                                            <ComboBoxItem Content="claude-3-5-haiku (Rapid responses)" />
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 3. OpenAI -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconTerminal}" Fill="{StaticResource GoogleGreenBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="OpenAI" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                            <Button Click="OnTestProviderConnectionClicked" Tag="openai"
+                                                    Background="{StaticResource GoogleSurfaceHighBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,4">
+                                                <TextBlock Text="Test Connection" FontSize="11" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            </Button>
+                                            <CheckBox x:Name="OpenAiProviderCheck" IsChecked="True" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="160, *" RowDefinitions="Auto, Auto, Auto" Margin="0,4,0,0">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="API Key (Masked)" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*, Auto" Margin="0,0,0,8">
+                                            <TextBox Grid.Column="0" x:Name="SettingsOpenAiKeyBox" PasswordChar="*" Watermark="Paste OpenAI API Key (e.g. sk-proj-...)" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                            <Button Grid.Column="1" Click="OnTogglePasswordVisibilityClicked" Tag="SettingsOpenAiKeyBox" Background="Transparent" BorderThickness="0" Padding="6,4">
+                                                <Path Data="{StaticResource IconEye}" Fill="{StaticResource GoogleTextSecondaryBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                            </Button>
+                                        </Grid>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Base URL Override" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="OpenAiBaseUrlBox" Text="https://api.openai.com/v1" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Default Model" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="OpenAiModelCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" HorizontalAlignment="Stretch">
+                                            <ComboBoxItem Content="gpt-4o (Multimodal reasoning)" />
+                                            <ComboBoxItem Content="gpt-4o-mini (Cost-effective fast tier)" />
+                                            <ComboBoxItem Content="o3-mini (High reasoning effort)" />
+                                            <ComboBoxItem Content="o1 (Full reasoning model)" />
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 4. DeepSeek -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconIntel}" Fill="{StaticResource GoogleCyanBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="DeepSeek" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                            <Button Click="OnTestProviderConnectionClicked" Tag="deepseek"
+                                                    Background="{StaticResource GoogleSurfaceHighBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,4">
+                                                <TextBlock Text="Test Connection" FontSize="11" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            </Button>
+                                            <CheckBox x:Name="DeepSeekProviderCheck" IsChecked="True" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="160, *" RowDefinitions="Auto, Auto, Auto" Margin="0,4,0,0">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="API Key (Masked)" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*, Auto" Margin="0,0,0,8">
+                                            <TextBox Grid.Column="0" x:Name="SettingsDeepSeekKeyBox" PasswordChar="*" Watermark="Paste DeepSeek API Key (e.g. sk-...)" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                            <Button Grid.Column="1" Click="OnTogglePasswordVisibilityClicked" Tag="SettingsDeepSeekKeyBox" Background="Transparent" BorderThickness="0" Padding="6,4">
+                                                <Path Data="{StaticResource IconEye}" Fill="{StaticResource GoogleTextSecondaryBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                            </Button>
+                                        </Grid>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Base URL Override" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="DeepSeekBaseUrlBox" Text="https://api.deepseek.com/v1" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Default Model" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="DeepSeekModelCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" HorizontalAlignment="Stretch">
+                                            <ComboBoxItem Content="deepseek-chat (General purpose)" />
+                                            <ComboBoxItem Content="deepseek-reasoner (R1 Reasoning Architecture)" />
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 5. OpenRouter (200+ Multi-Provider Aggregator) -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconRadar}" Fill="{StaticResource GoogleYellowBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="OpenRouter (Aggregator)" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                            <Button Click="OnTestProviderConnectionClicked" Tag="openrouter"
+                                                    Background="{StaticResource GoogleSurfaceHighBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,4">
+                                                <TextBlock Text="Test Connection" FontSize="11" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            </Button>
+                                            <CheckBox x:Name="OpenRouterProviderCheck" IsChecked="True" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="160, *" RowDefinitions="Auto, Auto, Auto" Margin="0,4,0,0">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="API Key (Masked)" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*, Auto" Margin="0,0,0,8">
+                                            <TextBox Grid.Column="0" x:Name="SettingsOpenRouterKeyBox" PasswordChar="*" Watermark="Paste OpenRouter API Key (e.g. sk-or-...)" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                            <Button Grid.Column="1" Click="OnTogglePasswordVisibilityClicked" Tag="SettingsOpenRouterKeyBox" Background="Transparent" BorderThickness="0" Padding="6,4">
+                                                <Path Data="{StaticResource IconEye}" Fill="{StaticResource GoogleTextSecondaryBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                            </Button>
+                                        </Grid>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Base URL Override" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="OpenRouterBaseUrlBox" Text="https://openrouter.ai/api/v1" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Default Model" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="OpenRouterModelCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" HorizontalAlignment="Stretch">
+                                            <ComboBoxItem Content="anthropic/claude-3.7-sonnet" />
+                                            <ComboBoxItem Content="deepseek/deepseek-r1" />
+                                            <ComboBoxItem Content="google/gemini-2.5-pro" />
+                                            <ComboBoxItem Content="meta-llama/llama-3.3-70b-instruct" />
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 6. Ollama / Local Air-Gapped LLM -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconTerminal}" Fill="{StaticResource GoogleGreenBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="Ollama (Local / Air-Gapped Engine)" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            <Border Background="#133324" CornerRadius="4" Padding="6,2" BorderBrush="#1D4C33" BorderThickness="1">
+                                                <TextBlock Text="Zero Key Required" FontSize="10" FontWeight="Medium" Foreground="{StaticResource GoogleGreenBrush}" />
+                                            </Border>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                            <Button Click="OnTestProviderConnectionClicked" Tag="ollama"
+                                                    Background="{StaticResource GoogleSurfaceHighBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,4">
+                                                <TextBlock Text="Test Connection" FontSize="11" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            </Button>
+                                            <CheckBox x:Name="OllamaProviderCheck" IsChecked="True" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="160, *" RowDefinitions="Auto, Auto" Margin="0,4,0,0">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Ollama Endpoint" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="OllamaEndpointBox" Text="http://127.0.0.1:11434" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Local Model" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Row="1" Grid.Column="1" x:Name="OllamaModelCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" HorizontalAlignment="Stretch">
+                                            <ComboBoxItem Content="llama3.3:latest" />
+                                            <ComboBoxItem Content="qwen2.5-coder:latest" />
+                                            <ComboBoxItem Content="deepseek-r1:14b" />
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 7. Groq -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconRadar}" Fill="{StaticResource GoogleRedBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="Groq (Ultra-Fast LPU)" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                            <Button Click="OnTestProviderConnectionClicked" Tag="groq"
+                                                    Background="{StaticResource GoogleSurfaceHighBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,4">
+                                                <TextBlock Text="Test Connection" FontSize="11" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            </Button>
+                                            <CheckBox x:Name="GroqProviderCheck" IsChecked="False" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="160, *" RowDefinitions="Auto, Auto, Auto" Margin="0,4,0,0">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="API Key (Masked)" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*, Auto" Margin="0,0,0,8">
+                                            <TextBox Grid.Column="0" x:Name="SettingsGroqKeyBox" PasswordChar="*" Watermark="Paste Groq API Key (gsk_...)" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                            <Button Grid.Column="1" Click="OnTogglePasswordVisibilityClicked" Tag="SettingsGroqKeyBox" Background="Transparent" BorderThickness="0" Padding="6,4">
+                                                <Path Data="{StaticResource IconEye}" Fill="{StaticResource GoogleTextSecondaryBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                            </Button>
+                                        </Grid>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Base URL Override" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="GroqBaseUrlBox" Text="https://api.groq.com/openai/v1" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Default Model" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="GroqModelCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" HorizontalAlignment="Stretch">
+                                            <ComboBoxItem Content="llama-3.3-70b-versatile" />
+                                            <ComboBoxItem Content="mixtral-8x7b-32768" />
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 8. Mistral AI -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconPrism}" Fill="{StaticResource GoogleYellowBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="Mistral AI" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                            <Button Click="OnTestProviderConnectionClicked" Tag="mistral"
+                                                    Background="{StaticResource GoogleSurfaceHighBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,4">
+                                                <TextBlock Text="Test Connection" FontSize="11" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            </Button>
+                                            <CheckBox x:Name="MistralProviderCheck" IsChecked="False" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="160, *" RowDefinitions="Auto, Auto, Auto" Margin="0,4,0,0">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="API Key (Masked)" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*, Auto" Margin="0,0,0,8">
+                                            <TextBox Grid.Column="0" x:Name="SettingsMistralKeyBox" PasswordChar="*" Watermark="Paste Mistral API Key..." Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                            <Button Grid.Column="1" Click="OnTogglePasswordVisibilityClicked" Tag="SettingsMistralKeyBox" Background="Transparent" BorderThickness="0" Padding="6,4">
+                                                <Path Data="{StaticResource IconEye}" Fill="{StaticResource GoogleTextSecondaryBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                            </Button>
+                                        </Grid>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Base URL Override" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="MistralBaseUrlBox" Text="https://api.mistral.ai/v1" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Default Model" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="MistralModelCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" HorizontalAlignment="Stretch">
+                                            <ComboBoxItem Content="mistral-large-latest" />
+                                            <ComboBoxItem Content="codestral-latest" />
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 9. Together AI -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconSwarm}" Fill="{StaticResource GooglePurpleBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="Together AI" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                            <Button Click="OnTestProviderConnectionClicked" Tag="together"
+                                                    Background="{StaticResource GoogleSurfaceHighBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,4">
+                                                <TextBlock Text="Test Connection" FontSize="11" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            </Button>
+                                            <CheckBox x:Name="TogetherProviderCheck" IsChecked="False" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="160, *" RowDefinitions="Auto, Auto, Auto" Margin="0,4,0,0">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="API Key (Masked)" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <Grid Grid.Row="0" Grid.Column="1" ColumnDefinitions="*, Auto" Margin="0,0,0,8">
+                                            <TextBox Grid.Column="0" x:Name="SettingsTogetherKeyBox" PasswordChar="*" Watermark="Paste Together API Key..." Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                            <Button Grid.Column="1" Click="OnTogglePasswordVisibilityClicked" Tag="SettingsTogetherKeyBox" Background="Transparent" BorderThickness="0" Padding="6,4">
+                                                <Path Data="{StaticResource IconEye}" Fill="{StaticResource GoogleTextSecondaryBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                            </Button>
+                                        </Grid>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Base URL Override" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="TogetherBaseUrlBox" Text="https://api.together.xyz/v1" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Default Model" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="TogetherModelCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" HorizontalAlignment="Stretch">
+                                            <ComboBoxItem Content="meta-llama/Llama-3.3-70B-Instruct-Turbo" />
+                                            <ComboBoxItem Content="deepseek-ai/DeepSeek-R1" />
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 10. Custom OpenAI-Compatible Provider (vLLM / LM Studio / LiteLLM) -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconSettings}" Fill="{StaticResource GoogleCyanBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="Custom OpenAI-Compatible Endpoint" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                            <Button Click="OnTestProviderConnectionClicked" Tag="custom"
+                                                    Background="{StaticResource GoogleSurfaceHighBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,4">
+                                                <TextBlock Text="Test Connection" FontSize="11" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            </Button>
+                                            <CheckBox x:Name="CustomProviderCheck" IsChecked="False" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="160, *" RowDefinitions="Auto, Auto, Auto, Auto" Margin="0,4,0,0">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Provider Name" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="CustomProviderNameBox" Watermark="e.g. Local vLLM Gateway" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Endpoint Base URL" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="CustomBaseUrlBox" Watermark="e.g. http://127.0.0.1:8000/v1" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="API Key (Masked)" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*, Auto" Margin="0,0,0,8">
+                                            <TextBox Grid.Column="0" x:Name="SettingsCustomKeyBox" PasswordChar="*" Watermark="Optional Bearer token..." Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                            <Button Grid.Column="1" Click="OnTogglePasswordVisibilityClicked" Tag="SettingsCustomKeyBox" Background="Transparent" BorderThickness="0" Padding="6,4">
+                                                <Path Data="{StaticResource IconEye}" Fill="{StaticResource GoogleTextSecondaryBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                            </Button>
+                                        </Grid>
+
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Custom Model ID" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="CustomModelIdBox" Watermark="e.g. meta-llama/Llama-3.3-70B-Instruct" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- VIEW 3: MCPS & INTEGRATIONS (DEDICATED FULL TAB) -->
+                    <ScrollViewer x:Name="ViewMcp" IsVisible="False">
+                        <StackPanel Spacing="18" MaxWidth="920" HorizontalAlignment="Left">
+                            <!-- Header -->
+                            <Grid ColumnDefinitions="*, Auto">
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <Path Data="{StaticResource IconTool}" Fill="{StaticResource GoogleCyanBrush}" Width="18" Height="18" Stretch="Uniform" />
+                                        <TextBlock Text="Model Context Protocol (MCP) &amp; Tool Integrations" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                    </StackPanel>
+                                    <TextBlock Text="Sidecar tools, remote browser automation, execution sandboxes, and collaborative blackboard services." FontSize="12" Foreground="{StaticResource GoogleTextSecondaryBrush}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock x:Name="McpStatusNotice" Text="" FontSize="11" Foreground="{StaticResource GoogleGreenBrush}" IsVisible="False" />
+
+                            <!-- 1. Chrome MCP Server -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconChrome}" Fill="{StaticResource GoogleCyanBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="Chrome MCP Server (Browsing &amp; Puppeteer)" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            <Border Background="#12242D" CornerRadius="4" Padding="6,2" BorderBrush="#1C4050" BorderThickness="1">
+                                                <TextBlock Text="Remote DevTools" FontSize="10" FontWeight="Medium" Foreground="{StaticResource GoogleCyanBrush}" />
+                                            </Border>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                            <Button Click="OnTestChromeMcpClicked"
+                                                    Background="{StaticResource GoogleSurfaceHighBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,4">
+                                                <TextBlock Text="Test Connection" FontSize="11" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            </Button>
+                                            <CheckBox x:Name="ChromeMcpCheck" IsChecked="True" Checked="OnChromeMcpToggleChanged" Unchecked="OnChromeMcpToggleChanged" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <TextBlock Text="Enables autonomous web crawling, DOM tree inspection, form element interaction, cookie extraction, and dynamic JavaScript rendering." FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" TextWrapping="Wrap" />
+                                    <Grid ColumnDefinitions="160, *" Margin="0,4,0,0">
+                                        <TextBlock Grid.Column="0" Text="DevTools Endpoint URL" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="1" x:Name="ChromeMcpEndpointBox" Text="http://127.0.0.1:9222" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 2. Tartarus Hardened Container MCP -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconTerminal}" Fill="{StaticResource GoogleYellowBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="Tartarus Container Sandbox MCP" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            <Border Background="#332712" CornerRadius="4" Padding="6,2" BorderBrush="#48371B" BorderThickness="1">
+                                                <TextBlock Text="Podman Rootless" FontSize="10" FontWeight="Medium" Foreground="{StaticResource GoogleYellowBrush}" />
+                                            </Border>
+                                        </StackPanel>
+                                        <CheckBox x:Name="TartarusMcpCheck" Grid.Column="2" IsChecked="True" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <TextBlock Text="Provides safe isolated runtime for Nmap, Nikto, Sqlmap, Semgrep, and hash cracking tools with PID limits and zero host privileges." FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" TextWrapping="Wrap" />
+                                    <Grid ColumnDefinitions="160, *" Margin="0,4,0,0">
+                                        <TextBlock Grid.Column="0" Text="Container Command" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="1" Text="podman run --rm -i --network=host tartarus-kali" IsReadOnly="True" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextSecondaryBrush}" FontSize="11" FontFamily="Monospace" Padding="10,8" CornerRadius="6" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 3. Filesystem MCP Server -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconFolder}" Fill="{StaticResource GoogleBlueBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="Filesystem MCP Server" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            <Border Background="#133324" CornerRadius="4" Padding="6,2" BorderBrush="#1D4C33" BorderThickness="1">
+                                                <TextBlock Text="CWD Sandboxed" FontSize="10" FontWeight="Medium" Foreground="{StaticResource GoogleGreenBrush}" />
+                                            </Border>
+                                        </StackPanel>
+                                        <CheckBox x:Name="FsMcpCheck" Grid.Column="2" IsChecked="True" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <TextBlock Text="Constrained file search, AST grep, text patch verification, and workspace file editing under IronGate policy rules." FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" TextWrapping="Wrap" />
+                                    <Grid ColumnDefinitions="160, *" Margin="0,4,0,0">
+                                        <TextBlock Grid.Column="0" Text="Allowed Root Path" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="1" x:Name="FsMcpRootBox" Watermark="e.g. /home/admin/Swarm" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 4. Citadel Operations & Blackboard MCP -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconSwarm}" Fill="{StaticResource GooglePurpleBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="Citadel Operations &amp; Blackboard MCP" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            <Border Background="#1C2738" CornerRadius="4" Padding="6,2" BorderBrush="#263A54" BorderThickness="1">
+                                                <TextBlock Text="Port :8088" FontSize="10" FontWeight="Medium" Foreground="{StaticResource GoogleBlueBrush}" />
+                                            </Border>
+                                        </StackPanel>
+                                        <CheckBox x:Name="CitadelMcpCheck" Grid.Column="2" IsChecked="True" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <TextBlock Text="Multi-agent shared blackboard intelligence state, synchronized vulnerability logging, and Zero-Trust IronGate queue." FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" TextWrapping="Wrap" />
+                                    <Grid ColumnDefinitions="160, *" Margin="0,4,0,0">
+                                        <TextBlock Grid.Column="0" Text="Service Base URL" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="1" Text="http://127.0.0.1:8088" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 5. PostgreSQL MCP -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Path Data="{StaticResource IconIntel}" Fill="{StaticResource GoogleBlueBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                            <TextBlock Text="PostgreSQL Database MCP" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                        </StackPanel>
+                                        <CheckBox x:Name="PostgresMcpCheck" Grid.Column="2" IsChecked="False" Content="Enabled" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="160, *" Margin="0,4,0,0">
+                                        <TextBlock Grid.Column="0" Text="Connection URI (Masked)" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <Grid Grid.Column="1" ColumnDefinitions="*, Auto">
+                                            <TextBox Grid.Column="0" x:Name="PostgresMcpUriBox" PasswordChar="*" Watermark="postgresql://user:pass@localhost:5432/dbname" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                            <Button Grid.Column="1" Click="OnTogglePasswordVisibilityClicked" Tag="PostgresMcpUriBox" Background="Transparent" BorderThickness="0" Padding="6,4">
+                                                <Path Data="{StaticResource IconEye}" Fill="{StaticResource GoogleTextSecondaryBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 6. Register Custom MCP Server -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                                <StackPanel Spacing="12">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <Path Data="{StaticResource IconPlus}" Fill="{StaticResource GoogleBlueBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                        <TextBlock Text="Register Custom MCP Server" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource GoogleBlueBrush}" />
+                                    </StackPanel>
+                                    <TextBlock Text="Add any community or organization-specific MCP server (e.g. GitHub, Slack, Jira, Snyk, Docker) via Stdio command or Remote SSE." FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" />
+
+                                    <Grid ColumnDefinitions="160, *" RowDefinitions="Auto, Auto, Auto, Auto" Margin="0,4,0,0">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Server Identifier" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="CustomMcpNameBox" Watermark="e.g. github-mcp" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Transport Type" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <ComboBox Grid.Row="1" Grid.Column="1" x:Name="CustomMcpTypeCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" HorizontalAlignment="Stretch" Margin="0,0,0,8">
+                                            <ComboBoxItem Content="Local Stdio (Command + Arguments)" />
+                                            <ComboBoxItem Content="Remote SSE (Server-Sent Events URL)" />
+                                        </ComboBox>
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Command / URL" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="CustomMcpCmdBox" Watermark="npx -y @modelcontextprotocol/server-... OR https://..." Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Token / Env (Masked)" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <Grid Grid.Row="3" Grid.Column="1" ColumnDefinitions="*, Auto">
+                                            <TextBox Grid.Column="0" x:Name="CustomMcpTokenBox" PasswordChar="*" Watermark="Optional Bearer token or secret..." Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                            <Button Grid.Column="1" Click="OnTogglePasswordVisibilityClicked" Tag="CustomMcpTokenBox" Background="Transparent" BorderThickness="0" Padding="6,4">
+                                                <Path Data="{StaticResource IconEye}" Fill="{StaticResource GoogleTextSecondaryBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
+
+                                    <Button HorizontalAlignment="Right" Click="OnAddCustomMcpClicked"
+                                            Background="{StaticResource PrimaryActionGradient}" BorderBrush="{StaticResource GoogleBlueBrush}" BorderThickness="1"
+                                            CornerRadius="6" Padding="16,6">
+                                        <TextBlock Text="Add MCP Server" FontWeight="Medium" Foreground="White" FontSize="12" />
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- VIEW 4: SETTINGS (OPENCODE-LEVEL COMPREHENSIVE CONFIGURATION) -->
+                    <ScrollViewer x:Name="ViewSettings" IsVisible="False">
+                        <StackPanel Spacing="18" MaxWidth="920" HorizontalAlignment="Left">
+                            <!-- Header & Save/Export -->
+                            <Grid ColumnDefinitions="*, Auto">
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <Path Data="{StaticResource IconSettings}" Fill="{StaticResource GoogleBlueBrush}" Width="18" Height="18" Stretch="Uniform" />
+                                        <TextBlock Text="Platform Settings &amp; OpenCode Configuration" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                    </StackPanel>
+                                    <TextBlock Text="Granular agent runtime control, OpenCode tool permissions table, reasoning effort, and directory isolation boundaries." FontSize="12" Foreground="{StaticResource GoogleTextSecondaryBrush}" />
+                                </StackPanel>
+                                <Button Grid.Column="1" Click="OnSaveSettingsKeysClicked"
+                                        Background="{StaticResource PrimaryActionGradient}" BorderBrush="{StaticResource GoogleBlueBrush}" BorderThickness="1"
+                                        CornerRadius="6" Padding="16,8">
+                                    <TextBlock Text="Save &amp; Export opencode.json" FontWeight="Medium" Foreground="White" FontSize="12" />
+                                </Button>
+                            </Grid>
+
+                            <TextBlock x:Name="SettingsKeySaveNotice" Text="" FontSize="11" Foreground="{StaticResource GoogleGreenBrush}" IsVisible="False" />
+
+                            <!-- Card 1: Agent Defaults & Reasoning Parameters -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="18">
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="AGENT DEFAULTS &amp; REASONING (OPENCODE MODEL CONFIG)" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource GoogleBlueBrush}" LetterSpacing="0.4" />
+                                    <Grid ColumnDefinitions="190, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Default Active Model" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,10" />
+                                        <ComboBox Grid.Row="0" Grid.Column="1" x:Name="SettingsDefaultModelCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" HorizontalAlignment="Stretch" Margin="0,0,0,10">
+                                            <ComboBoxItem Content="gemini-2.5-flash (Fast &amp; Accurate)" />
+                                            <ComboBoxItem Content="gemini-2.5-pro (Deep Analysis)" />
+                                            <ComboBoxItem Content="claude-3-7-sonnet-20250219 (Advanced Reasoning)" />
+                                            <ComboBoxItem Content="gpt-4o (Multimodal Reasoning)" />
+                                            <ComboBoxItem Content="deepseek-r1 (High Reasoning Effort)" />
+                                            <ComboBoxItem Content="ollama/llama3.3:latest (Local Air-Gapped)" />
+                                        </ComboBox>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Autonomy &amp; Action Tier" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,10" />
+                                        <ComboBox Grid.Row="1" Grid.Column="1" x:Name="SettingsAutonomyCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" HorizontalAlignment="Stretch" Margin="0,0,0,10">
+                                            <ComboBoxItem Content="Active Autonomy (Auto-execute approved actions, ask on high risk)" />
+                                            <ComboBoxItem Content="Supervised Walkthrough (Ask confirmation for file writes and scans)" />
+                                            <ComboBoxItem Content="Strict Zero-Trust (Require explicit confirmation for every single tool call)" />
+                                        </ComboBox>
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Reasoning &amp; Thinking Effort" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,10" />
+                                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="SettingsThinkingCombo" SelectedIndex="1" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" HorizontalAlignment="Stretch" Margin="0,0,0,10">
+                                            <ComboBoxItem Content="Low (Direct fast execution with minimal internal chain-of-thought)" />
+                                            <ComboBoxItem Content="Medium (Standard analytical verification before actions)" />
+                                            <ComboBoxItem Content="High (Deep exhaustive security auditing and multi-step plan verification)" />
+                                        </ComboBox>
+
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Sampling Temperature" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,0,10" />
+                                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="SettingsTempBox" Text="0.2" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" Margin="0,0,0,10" />
+
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Max Context Window" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="SettingsContextCombo" SelectedIndex="1" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" HorizontalAlignment="Stretch">
+                                            <ComboBoxItem Content="128k Tokens (Standard)" />
+                                            <ComboBoxItem Content="200k Tokens (Extended Working Memory)" />
+                                            <ComboBoxItem Content="1M Tokens (Full Codebase Ingestion)" />
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Card 2: OpenCode Tool Permissions Matrix -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="18">
+                                <StackPanel Spacing="12">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="TOOL PERMISSIONS MATRIX (OPENCODE PERMISSION RULES)" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource GoogleYellowBrush}" LetterSpacing="0.4" />
+                                        <TextBlock Text="Control tool behavior exactly as in opencode.json permissions: allow without prompting, ask for confirmation, or deny execution entirely." FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" />
+                                    </StackPanel>
+
+                                    <!-- Table Header -->
+                                    <Border Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" BorderThickness="1" CornerRadius="6" Padding="12,8">
+                                        <Grid ColumnDefinitions="140, *, 180">
+                                            <TextBlock Grid.Column="0" Text="TOOL NAME" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource GoogleTextMutedBrush}" LetterSpacing="0.4" />
+                                            <TextBlock Grid.Column="1" Text="DESCRIPTION" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource GoogleTextMutedBrush}" LetterSpacing="0.4" />
+                                            <TextBlock Grid.Column="2" Text="POLICY RULE" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource GoogleTextMutedBrush}" LetterSpacing="0.4" HorizontalAlignment="Right" />
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Row: bash -->
+                                    <Grid ColumnDefinitions="140, *, 180">
+                                        <TextBlock Grid.Column="0" Text="bash / exec" FontWeight="SemiBold" FontSize="12" Foreground="{StaticResource GoogleCyanBrush}" FontFamily="Monospace" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="Execution of terminal shell commands and tools" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Column="2" x:Name="PermBashCombo" SelectedIndex="1" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="11" HorizontalAlignment="Right" Width="140">
+                                            <ComboBoxItem Content="allow" />
+                                            <ComboBoxItem Content="ask (confirm)" />
+                                            <ComboBoxItem Content="deny" />
+                                        </ComboBox>
+                                    </Grid>
+
+                                    <!-- Row: edit/write -->
+                                    <Grid ColumnDefinitions="140, *, 180">
+                                        <TextBlock Grid.Column="0" Text="edit / write" FontWeight="SemiBold" FontSize="12" Foreground="{StaticResource GoogleYellowBrush}" FontFamily="Monospace" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="Creating and modifying project files on disk" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Column="2" x:Name="PermEditCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="11" HorizontalAlignment="Right" Width="140">
+                                            <ComboBoxItem Content="allow" />
+                                            <ComboBoxItem Content="ask (confirm)" />
+                                            <ComboBoxItem Content="deny" />
+                                        </ComboBox>
+                                    </Grid>
+
+                                    <!-- Row: read -->
+                                    <Grid ColumnDefinitions="140, *, 180">
+                                        <TextBlock Grid.Column="0" Text="read / search" FontWeight="SemiBold" FontSize="12" Foreground="{StaticResource GoogleGreenBrush}" FontFamily="Monospace" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="Inspecting files, code grep, and directory contents" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Column="2" x:Name="PermReadCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="11" HorizontalAlignment="Right" Width="140">
+                                            <ComboBoxItem Content="allow" />
+                                            <ComboBoxItem Content="ask (confirm)" />
+                                            <ComboBoxItem Content="deny" />
+                                        </ComboBox>
+                                    </Grid>
+
+                                    <!-- Row: webfetch / chrome -->
+                                    <Grid ColumnDefinitions="140, *, 180">
+                                        <TextBlock Grid.Column="0" Text="webfetch / browse" FontWeight="SemiBold" FontSize="12" Foreground="{StaticResource GoogleBlueBrush}" FontFamily="Monospace" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="Live Chrome DevTools crawling and remote HTTP requests" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Column="2" x:Name="PermWebCombo" SelectedIndex="0" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="11" HorizontalAlignment="Right" Width="140">
+                                            <ComboBoxItem Content="allow" />
+                                            <ComboBoxItem Content="ask (confirm)" />
+                                            <ComboBoxItem Content="deny" />
+                                        </ComboBox>
+                                    </Grid>
+
+                                    <!-- Row: network_scan -->
+                                    <Grid ColumnDefinitions="140, *, 180">
+                                        <TextBlock Grid.Column="0" Text="network_scan" FontWeight="SemiBold" FontSize="12" Foreground="{StaticResource GoogleRedBrush}" FontFamily="Monospace" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="Port scanning and dynamic vulnerability probing" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Column="2" x:Name="PermScanCombo" SelectedIndex="1" Background="#141517" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="11" HorizontalAlignment="Right" Width="140">
+                                            <ComboBoxItem Content="allow" />
+                                            <ComboBoxItem Content="ask (confirm)" />
+                                            <ComboBoxItem Content="deny" />
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Card 3: Execution Scope & Directory Confinement -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="18">
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="AGENT EXECUTION SCOPE &amp; BOUNDARIES" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource GoogleGreenBrush}" LetterSpacing="0.4" />
+                                    <RadioButton x:Name="ScopeCwdOnlyRadio" GroupName="AgentScopeGroup" IsChecked="True" Checked="OnScopeModeChanged">
+                                        <StackPanel Spacing="2" Margin="6,0,0,0">
+                                            <TextBlock Text="Current Working Directory (CWD Only) [Recommended]" FontWeight="Medium" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            <TextBlock Text="Sandboxes agent actions strictly to the workspace directory. Tasks targeting external paths request in-chat user confirmation." FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" />
+                                        </StackPanel>
+                                    </RadioButton>
+                                    <RadioButton x:Name="ScopeGlobalRadio" GroupName="AgentScopeGroup" Checked="OnScopeModeChanged">
+                                        <StackPanel Spacing="2" Margin="6,0,0,0">
+                                            <TextBlock Text="Global Sessions [Unrestricted Scope]" FontWeight="Medium" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                                            <TextBlock Text="Agent has global filesystem and environment execution authority without asking for directory approvals." FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" />
+                                        </StackPanel>
+                                    </RadioButton>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Card 4: OpenCode Custom Instructions -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="18">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="CUSTOM AGENT INSTRUCTIONS (OPENCODE INSTRUCTIONS DIRECTIVE)" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource GooglePurpleBrush}" LetterSpacing="0.4" />
+                                    <TextBlock Text="Additional guidelines, rules, and behavioral boundaries injected into the primary agent's prompt context." FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" />
+                                    <TextBox x:Name="CustomInstructionsBox" Watermark="e.g. Always follow OWASP Top 10 standards. Validate all findings before logging. Confine reconnaissance to authorized host targets." AcceptsReturn="True" Height="70" Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10" CornerRadius="6" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Card 5: Citadel Authentication & Local Persistence -->
+                            <Border Background="{StaticResource AntigravityCardGradient}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1" CornerRadius="10" Padding="18">
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="CITADEL DAEMON &amp; ENGINE PERSISTENCE" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource GoogleBlueBrush}" LetterSpacing="0.4" />
+                                    <Grid ColumnDefinitions="190, *" Margin="0,4,0,0">
+                                        <TextBlock Grid.Column="0" Text="Citadel Daemon Key (Masked)" FontSize="12" Foreground="{StaticResource GoogleTextPrimaryBrush}" VerticalAlignment="Center" />
+                                        <Grid Grid.Column="1" ColumnDefinitions="*, Auto">
+                                            <TextBox Grid.Column="0" x:Name="SettingsCitadelKeyBox" PasswordChar="*" Watermark="Citadel Operations Bearer Token..." Background="#141517" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" Padding="10,8" CornerRadius="6" />
+                                            <Button Grid.Column="1" Click="OnTogglePasswordVisibilityClicked" Tag="SettingsCitadelKeyBox" Background="Transparent" BorderThickness="0" Padding="6,4">
+                                                <Path Data="{StaticResource IconEye}" Fill="{StaticResource GoogleTextSecondaryBrush}" Width="14" Height="14" Stretch="Uniform" />
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
+                                    <CheckBox x:Name="CitadelWalCheck" IsChecked="True" Content="Enable Append-Only SQLite WAL Persistence Ledger" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" />
+                                    <CheckBox x:Name="GcOptimizationCheck" IsChecked="True" Content="Aggressive Workstation GC Memory Compaction" FontSize="11" Foreground="{StaticResource GoogleTextSecondaryBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- SUBAGENT ACTIVITY INSPECTOR MODAL OVERLAY -->
+        <Border Grid.Row="0" Grid.RowSpan="2" x:Name="SubagentsModalOverlay" IsVisible="False"
+                Background="#B2000000" Padding="40">
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center" Width="720" MaxHeight="600"
+                    Background="{StaticResource GoogleSurfaceBrush}" BorderBrush="{StaticResource GoogleBorderBrush}"
+                    BorderThickness="1" CornerRadius="12" Padding="24">
+                <Grid RowDefinitions="Auto, *, Auto">
+                    <!-- Header -->
+                    <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,16">
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <Path Data="{StaticResource IconSubagent}" Fill="{StaticResource GoogleBlueBrush}" Width="16" Height="16" Stretch="Uniform" />
+                                <TextBlock Text="Subagent Orchestration Activity Inspector" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource GoogleTextPrimaryBrush}" />
+                            </StackPanel>
+                            <TextBlock Text="Live telemetry and command traces for non-user-facing delegated worker agents" FontSize="12" Foreground="{StaticResource GoogleTextSecondaryBrush}" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Click="OnCloseSubagentsModalClicked"
+                                Background="Transparent" BorderThickness="0" Padding="8,4">
+                            <Path Data="{StaticResource IconCross}" Fill="{StaticResource GoogleTextSecondaryBrush}" Width="12" Height="12" Stretch="Uniform" />
+                        </Button>
+                    </Grid>
+
+                    <!-- Subagents List -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="SubagentsInspectorPanel" Spacing="10" />
+                    </ScrollViewer>
+
+                    <!-- Footer -->
+                    <Border Grid.Row="2" BorderBrush="{StaticResource GoogleBorderSubtleBrush}" BorderThickness="0,1,0,0" Padding="0,14,0,0" Margin="0,14,0,0">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <TextBlock Grid.Column="0" Text="Note: Subagents are autonomous workers invoked by the primary agent and cannot be messaged directly." FontSize="11" Foreground="{StaticResource GoogleTextMutedBrush}" VerticalAlignment="Center" />
+                            <Button Grid.Column="1" Click="OnCloseSubagentsModalClicked"
+                                    Background="{StaticResource GoogleSurfaceHighBrush}" BorderBrush="{StaticResource GoogleBorderBrush}" BorderThickness="1"
+                                    CornerRadius="6" Padding="16,6">
+                                <TextBlock Text="Close" Foreground="{StaticResource GoogleTextPrimaryBrush}" FontSize="12" />
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </Border>
+    </Grid>
+</Window>

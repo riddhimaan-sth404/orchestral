@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+
+# Rust
+orchestral-core/target/
+target/
+**/*.rs.bk
+
+# .NET / Avalonia
+orchestral-desktop/bin/
+orchestral-desktop/obj/
+bin/orchestral-desktop/
+bin/Debug/
+bin/Release/
+obj/
+*.user
+
+# Local state and logs
+*.db
+*.db-wal
+*.db-shm
+*.log
+.orchestral/
+
+# Large binaries and build targets
+bin/goose
+bin/orchestral-core
+goose-upstream/
+
+# OS and Editor files
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
